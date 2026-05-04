@@ -1,6 +1,10 @@
 import dotenv from "dotenv";
 import app from "./app.js";
+import crypto from "crypto";
 import connectDB from "./config/db.js";
+if (!global.crypto) {
+  global.crypto = crypto.webcrypto;
+}
 dotenv.config();
 
 const PORT = process.env.PORT;
