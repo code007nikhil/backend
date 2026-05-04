@@ -1,11 +1,11 @@
-import dotenv from "dotenv";
-import app from "./app.js";
 import crypto from "crypto";
-import connectDB from "./config/db.js";
 if (!global.crypto) {
   global.crypto = crypto.webcrypto;
 }
+import dotenv from "dotenv";
 dotenv.config();
+import app from "./app.js";
+import connectDB from "./config/db.js";
 
 const PORT = process.env.PORT;
 const mongoURI = process.env.MONGO_URI;
