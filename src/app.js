@@ -10,7 +10,9 @@ const app = express();
 
 // ─── Allowed Origins ───────────────────────────────────────────────
 const allowedOrigins = [
-  process.env.CLIENT_URL,           // e.g. https://yourapp.com
+  process.env.CLIENT_URL,
+  "https://managementclient.vercel.app",
+  "https://losttribe.in",           // e.g. https://yourapp.com
   "http://localhost:3000",          // CRA dev
 ].filter(Boolean);                  // remove undefined if CLIENT_URL not set
 
