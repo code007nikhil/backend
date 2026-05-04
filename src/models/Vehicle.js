@@ -1,0 +1,50 @@
+import mongoose from "mongoose";
+
+const vehicleSchema = new mongoose.Schema(
+  {
+    companyId: {
+      type: String,
+      required: true,
+    },
+    companyName: {
+      type: String,
+      required: true,
+    },
+    driverName: {
+      type: String,
+      required: true,
+    },
+    driverNumber: {
+      type: String,
+      required: true,
+    },
+    vehicleNumber: {
+      type: String,
+      required: true,
+    },
+    route: {
+      type: String,
+      required: true,
+    },
+    date: {
+      type: String,
+      required: true,
+    },
+    priceToDriver: {
+      type: String,
+      required: true,
+    },
+    additionalDetails: {
+      type: String,
+      default: "",
+    },
+    paidStatus: {
+      type: String,
+      enum: ["not paid", "paid"],
+      default: "not paid",
+    },
+  },
+  { timestamps: true }
+);
+
+export default mongoose.model("Vehicle", vehicleSchema);
