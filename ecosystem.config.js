@@ -8,8 +8,9 @@ module.exports = {
       autorestart: true,
       watch: false,
       env: {
-        PORT: 5001,
-        MONGO_URI: "mongodb+srv://thakurniks23943_db_user:LuJEaY8VacpSjYRO@cluster0.w8t8e45.mongodb.net/?appName=Cluster0"
+        PORT: process.env.PORT,
+        MONGO_URI: process.env.MONGO_URI,
+        CLIENT_URL: process.env.CLIENT_URL
       }
     }
   ]
