@@ -5,6 +5,7 @@ import rateLimit from "express-rate-limit";
 import vehicleRoutes from "./routes/vehicleRoutes.js";
 import companyRoutes from "./routes/companyRoutes.js";
 import routeRoutes from "./routes/routeRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
 
 const app = express();
 
@@ -55,6 +56,7 @@ app.use(express.urlencoded({ extended: true, limit: "10kb" }));
 app.use("/api/vehicles", vehicleRoutes);
 app.use("/api/companies", companyRoutes);
 app.use("/api/routes", routeRoutes);
+app.use("/api/payments", paymentRoutes);
 
 // ─── Health Check ──────────────────────────────────────────────────
 app.get("/api/health", (req, res) => {
