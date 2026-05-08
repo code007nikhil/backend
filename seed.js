@@ -93,7 +93,7 @@ const seedDatabase = async () => {
           driverNumber: drivers[driverIndex].number,
           vehicleNumber: vehicles[vehicleIndex],
           route: routes[routeIndex],
-          date: vehicleDate.toISOString().split("T")[0],
+          date: vehicleDate.toLocaleDateString("en-CA"),
           priceToDriver: priceOptions[priceIndex].toString(),
           additionalDetails: `Demo vehicle entry #${i + 1}`,
           paidStatus: "not paid",
