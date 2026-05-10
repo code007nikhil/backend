@@ -3,9 +3,9 @@ import Vehicle from "../models/Vehicle.js";
 // Create a new vehicle
 export const createVehicle = async (req, res) => {
   try {
-    const { companyId, companyName, driverName, driverNumber, vehicleNumber, route, date, priceToDriver, additionalDetails } = req.body;
+    const { companyId, companyName, driverName, driverNumber, vehicleName, vehicleNumber, route, date, priceToDriver, additionalDetails } = req.body;
 
-    if (!companyId || !companyName || !driverName || !driverNumber || !vehicleNumber || !route || !date || !priceToDriver) {
+    if (!companyId || !companyName || !driverName || !driverNumber || !vehicleName || !vehicleNumber || !route || !date || !priceToDriver) {
       return res.status(400).json({ message: "Please fill in all required fields" });
     }
 
@@ -14,6 +14,7 @@ export const createVehicle = async (req, res) => {
       companyName,
       driverName,
       driverNumber,
+      vehicleName,
       vehicleNumber,
       route,
       date,
@@ -90,15 +91,15 @@ export const getVehicleById = async (req, res) => {
 export const updateVehicle = async (req, res) => {
   try {
     const { id } = req.params;
-    const { driverName, driverNumber, vehicleNumber, route, date, priceToDriver, additionalDetails } = req.body;
+    const { driverName, driverNumber, vehicleNumber, vehicleName, route, date, priceToDriver, additionalDetails } = req.body;
 
-    if (!driverName || !driverNumber || !vehicleNumber || !route || !date || !priceToDriver) {
+    if (!driverName || !driverNumber || !vehicleNumber || !vehicleName || !route || !date || !priceToDriver) {
       return res.status(400).json({ message: "Please fill in all required fields" });
     }
 
     const vehicle = await Vehicle.findByIdAndUpdate(
       id,
-      { driverName, driverNumber, vehicleNumber, route, date, priceToDriver, additionalDetails },
+      { driverName, driverNumber, vehicleNumber, vehicleName, route, date, priceToDriver, additionalDetails },
       { new: true }
     );
 
@@ -170,7 +171,6 @@ export const getVehiclesByCompany = async (req, res) => {
   }
 };
 
-// Get driver details by driver number
 export const getDriverDetails = async (req, res) => {
   try {
     const { driverNumber } = req.params;
@@ -186,6 +186,8 @@ export const getDriverDetails = async (req, res) => {
     }
 
     const driverName = trips[0].driverName;
+    const vehicleName = trips[0].vehicleName; // ← fixed
+
     const totalAmount = trips.reduce((sum, v) => sum + parseFloat(v.priceToDriver || "0"), 0);
     const paidAmount = trips
       .filter((v) => v.paidStatus === "paid")
@@ -195,6 +197,7 @@ export const getDriverDetails = async (req, res) => {
     const driverDetails = {
       driverName,
       driverNumber,
+      vehicleName,
       totalTrips: trips.length,
       totalAmount: totalAmount.toFixed(2),
       paidAmount: paidAmount.toFixed(2),
@@ -202,6 +205,7 @@ export const getDriverDetails = async (req, res) => {
       trips: trips.map(trip => ({
         _id: trip._id,
         companyName: trip.companyName,
+        vehicleName: trip.vehicleName, // ← fixed
         vehicleNumber: trip.vehicleNumber,
         route: trip.route,
         date: trip.date,
