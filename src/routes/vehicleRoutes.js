@@ -11,6 +11,7 @@ import {
   deleteVehicle,
   getDriverDetails,
   updateCommission,
+  updatePaidToDriver,
 } from "../controllers/vehicleController.js";
 
 const router = express.Router();
@@ -41,6 +42,9 @@ router.put("/:id", updateVehicle);
 
 // Update paid status
 router.patch("/:id/paid-status", updatePaidStatus);
+
+// Update paid-to-driver
+router.patch("/:id/paid-to-driver", updatePaidToDriver);
 
 // Update commission
 router.patch("/:id/commission", updateCommission);

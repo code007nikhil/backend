@@ -34,6 +34,10 @@ const vehicleSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    paidToDriver:{
+      type: Boolean,
+      default: false
+    },
     vehicleName: {
       type: String,
       required: true,

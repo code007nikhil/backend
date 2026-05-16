@@ -3,7 +3,7 @@ import Vehicle from "../models/Vehicle.js";
 // Create a new vehicle
 export const createVehicle = async (req, res) => {
   try {
-    const { companyId, companyName, driverName, driverNumber, vehicleName, vehicleNumber, route, date, priceToDriver, additionalDetails } = req.body;
+    const { companyId, companyName, driverName, driverNumber, vehicleName, vehicleNumber, route, date, priceToDriver, additionalDetails, paidToDriver = false } = req.body;
 
     if (!companyId || !companyName || !driverName || !driverNumber || !vehicleName || !vehicleNumber || !route || !date || !priceToDriver) {
       return res.status(400).json({ message: "Please fill in all required fields" });
@@ -20,6 +20,7 @@ export const createVehicle = async (req, res) => {
       date,
       priceToDriver,
       additionalDetails,
+      paidToDriver,
     });
 
     await vehicle.save();
@@ -91,15 +92,33 @@ export const getVehicleById = async (req, res) => {
 export const updateVehicle = async (req, res) => {
   try {
     const { id } = req.params;
-    const { driverName, driverNumber, vehicleNumber, vehicleName, route, date, priceToDriver, additionalDetails, companyName, paidStatus, commissionAmount } = req.body;
+    const { driverName, driverNumber, vehicleNumber, vehicleName, route, date, priceToDriver, additionalDetails, companyName, paidStatus, commissionAmount, paidToDriver } = req.body;
 
     if (!driverName || !driverNumber || !vehicleNumber || !vehicleName || !route || !date || !priceToDriver) {
       return res.status(400).json({ message: "Please fill in all required fields" });
     }
 
+    const updateFields = {
+      driverName,
+      driverNumber,
+      vehicleNumber,
+      vehicleName,
+      route,
+      date,
+      priceToDriver,
+      additionalDetails,
+      companyName,
+      paidStatus,
+      commissionAmount,
+    };
+
+    if (typeof paidToDriver === "boolean") {
+      updateFields.paidToDriver = paidToDriver;
+    }
+
     const vehicle = await Vehicle.findByIdAndUpdate(
       id,
-      { driverName, driverNumber, vehicleNumber, vehicleName, route, date, priceToDriver, additionalDetails, companyName, paidStatus, commissionAmount },
+      updateFields,
       { new: true }
     );
 
@@ -179,6 +198,31 @@ export const updateCommission = async (req, res) => {
     res.status(200).json({ message: "Commission updated successfully", vehicle });
   } catch (error) {
     res.status(500).json({ message: "Error updating commission", error: error.message });
+  }
+}
+
+export const updatePaidToDriver = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { paidToDriver } = req.body;
+
+    if (typeof paidToDriver !== "boolean") {
+      return res.status(400).json({ message: "Invalid paidToDriver value" });
+    }
+
+    const vehicle = await Vehicle.findByIdAndUpdate(
+      id,
+      { paidToDriver },
+      { new: true }
+    );
+
+    if (!vehicle) {
+      return res.status(404).json({ message: "Vehicle not found" });
+    }
+
+    res.status(200).json({ message: "Paid-to-driver status updated successfully", vehicle });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating paid to driver", error: error.message });
   }
 }
 
