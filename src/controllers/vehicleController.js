@@ -91,7 +91,7 @@ export const getVehicleById = async (req, res) => {
 export const updateVehicle = async (req, res) => {
   try {
     const { id } = req.params;
-    const { driverName, driverNumber, vehicleNumber, vehicleName, route, date, priceToDriver, additionalDetails } = req.body;
+    const { driverName, driverNumber, vehicleNumber, vehicleName, route, date, priceToDriver, additionalDetails, companyName, paidStatus, commissionAmount } = req.body;
 
     if (!driverName || !driverNumber || !vehicleNumber || !vehicleName || !route || !date || !priceToDriver) {
       return res.status(400).json({ message: "Please fill in all required fields" });
@@ -99,7 +99,7 @@ export const updateVehicle = async (req, res) => {
 
     const vehicle = await Vehicle.findByIdAndUpdate(
       id,
-      { driverName, driverNumber, vehicleNumber, vehicleName, route, date, priceToDriver, additionalDetails },
+      { driverName, driverNumber, vehicleNumber, vehicleName, route, date, priceToDriver, additionalDetails, companyName, paidStatus, commissionAmount },
       { new: true }
     );
 
@@ -154,6 +154,33 @@ export const updatePaidStatus = async (req, res) => {
     res.status(500).json({ message: "Error updating paid status", error: error.message });
   }
 };
+
+
+export const updateCommission = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { commission } = req.body;
+    const normalizedCommission = String(commission);
+
+    if (!["0", "10", "Tanken", "not Tanken"].includes(normalizedCommission)) {
+      return res.status(400).json({ message: "Invalid commission value" });
+    }
+
+    const vehicle = await Vehicle.findByIdAndUpdate(
+      id,
+      { commission: normalizedCommission },
+      { new: true }
+    );
+
+    if (!vehicle) {
+      return res.status(404).json({ message: "Vehicle not found" });
+    }
+
+    res.status(200).json({ message: "Commission updated successfully", vehicle });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating commission", error: error.message });
+  }
+}
 
 // Get vehicles by company
 export const getVehiclesByCompany = async (req, res) => {

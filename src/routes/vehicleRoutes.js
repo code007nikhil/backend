@@ -10,6 +10,7 @@ import {
   updatePaidStatus,
   deleteVehicle,
   getDriverDetails,
+  updateCommission,
 } from "../controllers/vehicleController.js";
 
 const router = express.Router();
@@ -40,6 +41,9 @@ router.put("/:id", updateVehicle);
 
 // Update paid status
 router.patch("/:id/paid-status", updatePaidStatus);
+
+// Update commission
+router.patch("/:id/commission", updateCommission);
 
 // Delete vehicle
 router.delete("/:id", deleteVehicle);

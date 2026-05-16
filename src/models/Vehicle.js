@@ -47,6 +47,15 @@ const vehicleSchema = new mongoose.Schema(
       enum: ["not paid", "paid"],
       default: "not paid",
     },
+    commission: {
+      type: String,
+      enum: ["0", "10", "Tanken", "not Tanken"],
+      default: "not Tanken",
+    },
+    commissionAmount: {
+      type: String,
+      default: "0",
+    },
   },
   { timestamps: true }
 );
