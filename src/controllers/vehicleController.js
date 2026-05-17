@@ -1,4 +1,6 @@
 import Vehicle from "../models/Vehicle.js";
+import DriverPayment from "../models/DriverPayment.js";
+import { calculateDriverLedger } from "../utils/driverLedger.js";
 
 // Create a new vehicle
 export const createVehicle = async (req, res) => {
@@ -256,23 +258,26 @@ export const getDriverDetails = async (req, res) => {
       return res.status(404).json({ message: "Driver not found" });
     }
 
+    const cashPayments = await DriverPayment.find({ driverNumber }).sort({ paymentDate: -1 });
+    const ledger = calculateDriverLedger(trips, cashPayments);
+
     const driverName = trips[0].driverName;
     const vehicleName = trips[0].vehicleName; // ← fixed
-
-    const totalAmount = trips.reduce((sum, v) => sum + parseFloat(v.priceToDriver || "0"), 0);
-    const paidAmount = trips
-      .filter((v) => v.paidStatus === "paid")
-      .reduce((sum, v) => sum + parseFloat(v.priceToDriver || "0"), 0);
-    const unpaidAmount = totalAmount - paidAmount;
 
     const driverDetails = {
       driverName,
       driverNumber,
       vehicleName,
       totalTrips: trips.length,
-      totalAmount: totalAmount.toFixed(2),
-      paidAmount: paidAmount.toFixed(2),
-      unpaidAmount: unpaidAmount.toFixed(2),
+      totalAmount: ledger.totalOwed.toFixed(2),
+      totalGross: ledger.totalGross.toFixed(2),
+      commissionTaken: ledger.commissionTaken.toFixed(2),
+      commissionPending: ledger.commissionPending.toFixed(2),
+      paidAmount: ledger.totalPaid.toFixed(2),
+      unpaidAmount: ledger.remaining.toFixed(2),
+      paidViaTrips: ledger.paidViaTrips.toFixed(2),
+      paidViaCash: ledger.paidViaCash.toFixed(2),
+      cashPayments,
       trips: trips.map(trip => ({
         _id: trip._id,
         companyName: trip.companyName,
@@ -281,6 +286,9 @@ export const getDriverDetails = async (req, res) => {
         route: trip.route,
         date: trip.date,
         priceToDriver: trip.priceToDriver,
+        commission: trip.commission,
+        commissionAmount: trip.commissionAmount,
+        paidToDriver: trip.paidToDriver,
         paidStatus: trip.paidStatus,
         additionalDetails: trip.additionalDetails,
         createdAt: trip.createdAt,

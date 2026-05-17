@@ -7,6 +7,8 @@ import companyRoutes from "./routes/companyRoutes.js";
 import routeRoutes from "./routes/routeRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import expenseRoutes from "./routes/expenseRoutes.js";
+import campsiteRoutes from "./routes/campsiteRoutes.js";
+import driverPaymentRoutes from "./routes/driverPaymentRoutes.js";
 
 const app = express();
 
@@ -59,7 +61,8 @@ app.use("/api/companies", companyRoutes);
 app.use("/api/routes", routeRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/expenses", expenseRoutes);
-
+app.use("/api/campsites", campsiteRoutes);
+app.use("/api/driver-payments", driverPaymentRoutes);
 // ─── Health Check ──────────────────────────────────────────────────
 app.get("/api/health", (req, res) => {
   res.status(200).json({
