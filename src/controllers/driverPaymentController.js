@@ -58,6 +58,25 @@ export const getDriverBalance = async (req, res) => {
   }
 };
 
+// Get all payments across all drivers
+export const getAllPayments = async (req, res) => {
+  try {
+    const payments = await DriverPayment.find().sort({ paymentDate: -1 });
+    const totalPaid = payments.reduce((sum, p) => sum + p.amountPaid, 0);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        payments,
+        totalPaid,
+        paymentCount: payments.length,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching all payments", error: error.message });
+  }
+};
+
 // Get all payments for a driver
 export const getDriverPayments = async (req, res) => {
   try {
@@ -87,15 +106,17 @@ export const getDriverPayments = async (req, res) => {
 export const updatePayment = async (req, res) => {
   try {
     const { paymentId } = req.params;
-    const { paymentDate, amountPaid, paymentMethod, notes } = req.body;
+    const { driverName, paymentDate, amountPaid, paymentMethod, notes, recordedBy } = req.body;
 
     const payment = await DriverPayment.findByIdAndUpdate(
       paymentId,
       {
+        ...(driverName && { driverName }),
         ...(paymentDate && { paymentDate }),
-        ...(amountPaid && { amountPaid }),
+        ...(amountPaid !== undefined && { amountPaid }),
         ...(paymentMethod && { paymentMethod }),
-        ...(notes && { notes }),
+        ...(notes !== undefined && { notes }),
+        ...(recordedBy && { recordedBy }),
       },
       { new: true }
     );

@@ -5,13 +5,18 @@ import {
   getDriverBalance,
   updatePayment,
   deletePayment,
+  getAllPayments,
 } from "../controllers/driverPaymentController.js";
 
 const router = express.Router();
 
-router.post("/", createPayment);
+// Specific routes first (with /driver/ prefix)
 router.get("/driver/:driverNumber/balance", getDriverBalance);
 router.get("/driver/:driverNumber", getDriverPayments);
+
+// Generic routes
+router.post("/", createPayment);
+router.get("/", getAllPayments);
 router.patch("/:paymentId", updatePayment);
 router.delete("/:paymentId", deletePayment);
 
