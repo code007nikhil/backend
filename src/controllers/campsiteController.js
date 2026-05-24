@@ -27,15 +27,19 @@ export const getAllCampsites = async (req, res) => {
     const campsites = await Campsite.find(filter).sort(sortObj).lean();
 
     // Add computed fields
-    const campsitesWithBill = campsites.map(camp => ({
-      ...camp,
-      totalBill: camp.clients * camp.rtrekker +
+    const campsitesWithBill = campsites.map(camp => {
+      const totalBill = camp.clients * camp.rtrekker +
         1 * camp.rleader +
         camp.gcount * camp.rguide +
         camp.porters * camp.rporter +
-        camp.staff * camp.rstaff,
-      totalPeople: camp.clients + 1 + camp.gcount + camp.porters + camp.staff,
-    }));
+        camp.staff * camp.rstaff;
+      return {
+        ...camp,
+        totalBill,
+        totalPeople: camp.clients + 1 + camp.gcount + camp.porters + camp.staff,
+        remainingBalance: totalBill - (camp.paidAmount || 0),
+      };
+    });
 
     res.status(200).json({
       success: true,
@@ -70,10 +74,11 @@ export const getCampsite = async (req, res) => {
 
     const totalBill = campsite.calculateBill();
     const totalPeople = campsite.getTotalPeople();
+    const remainingBalance = campsite.calculateBalance();
 
     res.status(200).json({
       success: true,
-      data: { ...campsite.toObject(), totalBill, totalPeople },
+      data: { ...campsite.toObject(), totalBill, totalPeople, remainingBalance },
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -100,6 +105,7 @@ export const createCampsite = async (req, res) => {
       rstaff,
       paidStatus,
       notes,
+      paidAmount,
     } = req.body;
 
     // Validate required fields
@@ -124,17 +130,19 @@ export const createCampsite = async (req, res) => {
       rstaff: rstaff || 0,
       paidStatus: paidStatus || "not paid",
       notes: notes || "",
+      paidAmount: paidAmount || 0,
     });
 
     await newCampsite.save();
 
     const totalBill = newCampsite.calculateBill();
     const totalPeople = newCampsite.getTotalPeople();
+    const remainingBalance = newCampsite.calculateBalance();
 
     res.status(201).json({
       success: true,
       message: "Campsite created successfully",
-      data: { ...newCampsite.toObject(), totalBill, totalPeople },
+      data: { ...newCampsite.toObject(), totalBill, totalPeople, remainingBalance },
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -161,6 +169,7 @@ export const updateCampsite = async (req, res) => {
       rstaff,
       paidStatus,
       notes,
+      paidAmount,
     } = req.body;
 
     const updateData = {};
@@ -180,6 +189,7 @@ export const updateCampsite = async (req, res) => {
     if (rstaff !== undefined) updateData.rstaff = rstaff;
     if (paidStatus !== undefined) updateData.paidStatus = paidStatus;
     if (notes !== undefined) updateData.notes = notes;
+    if (paidAmount !== undefined) updateData.paidAmount = paidAmount;
 
     const campsite = await Campsite.findByIdAndUpdate(req.params.id, updateData, {
       new: true,
@@ -192,11 +202,12 @@ export const updateCampsite = async (req, res) => {
 
     const totalBill = campsite.calculateBill();
     const totalPeople = campsite.getTotalPeople();
+    const remainingBalance = campsite.calculateBalance();
 
     res.status(200).json({
       success: true,
       message: "Campsite updated successfully",
-      data: { ...campsite.toObject(), totalBill, totalPeople },
+      data: { ...campsite.toObject(), totalBill, totalPeople, remainingBalance },
     });
   } catch (error) {
     res.status(500).json({ error: error.message });

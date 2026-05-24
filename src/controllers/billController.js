@@ -73,11 +73,31 @@ export const createBill = async (req, res) => {
 export const updateBill = async (req, res) => {
   try {
     const { id } = req.params;
-    const { companyId, companyName, date, particulars, total, status } = req.body;
+    let { companyId, companyName, date, particulars, total, status } = req.body;
+
+    console.log("Update request received:", { companyId, companyIdType: typeof companyId, companyIdValue: JSON.stringify(companyId) });
+
+    // Handle companyId as either a string or object (from frontend populated response)
+    if (companyId && typeof companyId === "object") {
+      console.log("companyId is an object, extracting _id:", companyId);
+      companyId = companyId._id || companyId.id || companyId;
+    }
+
+    console.log("After extraction:", { companyId, companyIdType: typeof companyId });
+
+    // Build update object with only provided fields
+    const updateData = {};
+    if (companyId !== undefined) updateData.companyId = companyId;
+    if (companyName !== undefined) updateData.companyName = companyName;
+    if (date !== undefined) updateData.date = date;
+    if (particulars !== undefined) updateData.particulars = particulars;
+    if (total !== undefined) updateData.total = total;
+    if (status !== undefined) updateData.status = status;
 
     // Verify company exists if companyId is being updated
-    if (companyId) {
-      const company = await Company.findById(companyId);
+    if (updateData.companyId) {
+      console.log("Verifying company exists with ID:", updateData.companyId);
+      const company = await Company.findById(updateData.companyId);
       if (!company) {
         return res.status(404).json({ message: "Company not found" });
       }
@@ -85,8 +105,8 @@ export const updateBill = async (req, res) => {
 
     const bill = await Bill.findByIdAndUpdate(
       id,
-      { companyId, companyName, date, particulars, total, status },
-      { new: true }
+      updateData,
+      { new: true, runValidators: true }
     ).populate("companyId");
 
     if (!bill) {
@@ -95,6 +115,7 @@ export const updateBill = async (req, res) => {
 
     res.status(200).json({ message: "Bill updated successfully", bill });
   } catch (error) {
+    console.error("Error updating bill:", error);
     res.status(500).json({ message: "Error updating bill", error: error.message });
   }
 };

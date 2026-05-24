@@ -1,5 +1,31 @@
 import mongoose from "mongoose";
 
+// Define particulars subdocument schema
+const particularSchema = new mongoose.Schema(
+  {
+    id: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    rate: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+    amount: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+  },
+  { _id: false }
+);
+
 const billSchema = new mongoose.Schema(
   {
     companyId: {
@@ -10,30 +36,22 @@ const billSchema = new mongoose.Schema(
     companyName: {
       type: String,
       required: true,
+      trim: true,
     },
     date: {
       type: String, // Store as YYYY-MM-DD string for consistency
       required: true,
     },
-    particulars: [
-      {
-        id: String,
-        description: {
-          type: String,
-          required: true,
+    particulars: {
+      type: [particularSchema],
+      required: true,
+      validate: {
+        validator: function(v) {
+          return v && v.length > 0;
         },
-        rate: {
-          type: Number,
-          required: true,
-          min: 0,
-        },
-        amount: {
-          type: Number,
-          required: true,
-          min: 0,
-        },
+        message: "Bill must have at least one particular",
       },
-    ],
+    },
     total: {
       type: Number,
       required: true,

@@ -85,6 +85,11 @@ const campsiteSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    paidAmount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
   },
   { timestamps: true }
 );
@@ -98,6 +103,12 @@ campsiteSchema.methods.calculateBill = function () {
     this.porters * this.rporter +
     this.staff * this.rstaff
   );
+};
+
+// Calculate remaining balance
+campsiteSchema.methods.calculateBalance = function () {
+  const totalBill = this.calculateBill();
+  return totalBill - (this.paidAmount || 0);
 };
 
 // Calculate total people count
