@@ -148,8 +148,16 @@ export const getPaymentSummary = async (req, res) => {
 // Get all payment summaries for dashboard
 export const getAllPaymentSummaries = async (req, res) => {
   try {
-    const payments = await Payment.find({ status: "completed" });
-    
+    const { excludeMethods } = req.query;
+
+    const query = { status: "completed" };
+    if (excludeMethods) {
+      const methods = excludeMethods.split(",").map((m) => m.trim());
+      query.paymentMethod = { $nin: methods };
+    }
+
+    const payments = await Payment.find(query);
+
     const summaryMap = new Map();
     payments.forEach((payment) => {
       if (!summaryMap.has(payment.companyId)) {
