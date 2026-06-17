@@ -5,7 +5,7 @@ import { calculateDriverLedger } from "../utils/driverLedger.js";
 // Create a new vehicle
 export const createVehicle = async (req, res) => {
   try {
-    const { companyId, companyName, driverName, driverNumber, vehicleName, vehicleNumber, route, date, priceToDriver, additionalDetails, paidToDriver = false } = req.body;
+    const { companyId, companyName, driverName, driverNumber, vehicleName, vehicleNumber, route, date, priceToDriver, additionalDetails, commission, commissionAmount, paidToDriver = false } = req.body;
 
     if (!companyId || !companyName || !driverName || !driverNumber || !vehicleName || !vehicleNumber || !route || !date || !priceToDriver) {
       return res.status(400).json({ message: "Please fill in all required fields" });
@@ -22,6 +22,8 @@ export const createVehicle = async (req, res) => {
       date,
       priceToDriver,
       additionalDetails,
+      commission,
+      commissionAmount,
       paidToDriver,
     });
 
