@@ -3,7 +3,7 @@ import {
   createDriverNote,
   getNotesByDriver,
   deleteDriverNote,
-} from "../controllers/driverNotesController.js";
+} from "../controllers/Drivernotescontroller.js";
 
 const router = express.Router();
 
