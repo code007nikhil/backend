@@ -11,6 +11,7 @@ import campsiteRoutes from "./routes/campsiteRoutes.js";
 import driverPaymentRoutes from "./routes/driverPaymentRoutes.js";
 import upcomingGroupRoutes from "./routes/upcomingGroupRoutes.js";
 import billRoutes from "./routes/billRoutes.js";
+import drivernotesroutes from "./routes/drivernotesroutes.js"
 
 const app = express();
 
@@ -65,6 +66,7 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/expenses", expenseRoutes);
 app.use("/api/campsites", campsiteRoutes);
 app.use("/api/driver-payments", driverPaymentRoutes);
+app.use("/api/driver-notes", drivernotesroutes);
 app.use("/api/upcoming-groups", upcomingGroupRoutes);
 app.use("/api/bills", billRoutes);
 // ─── Health Check ──────────────────────────────────────────────────
